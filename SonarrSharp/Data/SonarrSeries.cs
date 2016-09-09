@@ -19,7 +19,17 @@ namespace SonarrSharp
 
         [JsonProperty("sizeOnDisk")] public long SizeOnDisk { get; set; }
 
+        [JsonProperty("images")] public List<Image> Images { get; set; }
+
+        public string ImageBaseUrl { get; set; }
+
         public override string ToString()
             => Title;
+
+        public class Image
+        {
+            [JsonProperty("coverType")] public string CoverType { get; set; }
+            [JsonProperty("url")] public string Url { get; set; }
+        }
     }
 }

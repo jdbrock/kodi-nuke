@@ -42,7 +42,12 @@ namespace SonarrSharp
             if (response.StatusCode != System.Net.HttpStatusCode.OK || response.Data == null)
                 throw new ApplicationException("Failed to retrieve series list.");
 
-            return response.Data;
+            var data = response.Data;
+
+            foreach (var item in data)
+                item.ImageBaseUrl = _client.BaseUrl.OriginalString;
+
+            return data;
         }
 
         public async Task DeleteAsync(int id)
