@@ -1,0 +1,3 @@
+[submodule "kodi-sharp"]
+	path = kodi-sharp
+	url = https://github.com/jdbrock/kodi-sharp.git

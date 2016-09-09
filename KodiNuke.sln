@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KodiNuke", "KodiNuke\KodiNuke.csproj", "{F53FAE24-3ECF-4D48-97D6-5481CF16A963}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarrSharp", "SonarrSharp\SonarrSharp.csproj", "{086DB95D-E350-4C2F-AAF9-11BD223CA6DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KodiSharp", "kodi-sharp\KodiSharp\KodiSharp.csproj", "{D9C2EBD5-983F-40AA-A7D0-D5EC9EF3911B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{F53FAE24-3ECF-4D48-97D6-5481CF16A963}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F53FAE24-3ECF-4D48-97D6-5481CF16A963}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F53FAE24-3ECF-4D48-97D6-5481CF16A963}.Release|Any CPU.Build.0 = Release|Any CPU
+		{086DB95D-E350-4C2F-AAF9-11BD223CA6DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{086DB95D-E350-4C2F-AAF9-11BD223CA6DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{086DB95D-E350-4C2F-AAF9-11BD223CA6DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{086DB95D-E350-4C2F-AAF9-11BD223CA6DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9C2EBD5-983F-40AA-A7D0-D5EC9EF3911B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C2EBD5-983F-40AA-A7D0-D5EC9EF3911B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9C2EBD5-983F-40AA-A7D0-D5EC9EF3911B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9C2EBD5-983F-40AA-A7D0-D5EC9EF3911B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
