@@ -22,4 +22,4 @@ _kClient = new KodiClient("YOUR-KODI-IP", userName: "KODI-USERNAME", password: "
 
 ## Screenshots
 
-![screenshot](https://i.imgur.com/4Lr9u0b.png "Screenshot")
+![screenshot](https://i.imgur.com/BB2JGEp.png "Screenshot")
