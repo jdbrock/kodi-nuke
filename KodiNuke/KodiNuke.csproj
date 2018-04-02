@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -96,6 +97,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Movie.cs" />
     <Compile Include="NullToHiddenConverter.cs" />
     <Compile Include="Series.cs" />
     <Page Include="MainWindow.xaml">
@@ -140,7 +142,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\kodi-sharp\KodiSharp\KodiSharp.csproj">
+    <ProjectReference Include="..\kodi-sharp\KodiSharp\KodiSharp.csproj">
       <Project>{d9c2ebd5-983f-40aa-a7d0-d5ec9ef3911b}</Project>
       <Name>KodiSharp</Name>
     </ProjectReference>

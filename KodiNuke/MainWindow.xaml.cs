@@ -27,10 +27,18 @@ namespace KodiNuke
     [ImplementPropertyChanged]
     public partial class MainWindow : MetroWindow
     {
+        public ObservableCollection<Series> FilteredSeries { get; set; }
         public ObservableCollection<Series> Series { get; }
         public Series SelectedSeries { get; set; }
 
-        public ICommand DeleteCommand { get; }
+        public ObservableCollection<Movie> Movies { get; }
+        public Movie SelectedMovie { get; set; }
+
+        public ICommand TvSortByNameCommand { get; set; }
+        public ICommand TvSortBySizeCommand { get; set; }
+        public ICommand TvDeleteCommand { get; }
+
+        private System.Linq.Expressions.Expression<Func<IQueryable<Series>, IQueryable<Series>>> _tvSort;
 
         private bool _refreshed;
 
@@ -43,11 +51,45 @@ namespace KodiNuke
             DataContext = this;
 
             _sClient = new SonarrClient("http://192.168.1.50:8989/api/", "9f7f7589ac1942cea5ec5cecdc431945");
-            _kClient = new KodiClient("192.168.1.75", userName: "kodi");
+            _kClient = new KodiClient("192.168.1.180", userName: "xbmc", password: "xbmc");
 
-            DeleteCommand = new DelegateCommand(async _ => await DeleteAsync());
+            _tvSort = x => x.OrderBy(y => y.Sonarr.Title);
+
+            TvSortByNameCommand = new DelegateCommand(TvSortByName);
+            TvSortBySizeCommand = new DelegateCommand(TvSortBySize);
+            TvDeleteCommand = new DelegateCommand(async _ => await DeleteAsync());
 
             Series = new ObservableCollection<Series>();
+            FilteredSeries = new ObservableCollection<Series>();
+
+            Movies = new ObservableCollection<Movie>();
+        }
+
+        private void TvSortBySize(object obj)
+        {
+            _tvSort = x => x.OrderByDescending(y => y.Sonarr.SizeOnDisk);
+            UpdateFilteredSeries();
+        }
+
+        private void TvSortByName(object obj)
+        {
+            _tvSort = x => x.OrderBy(y => y.Sonarr.Title);
+            UpdateFilteredSeries();
+        }
+
+        private void UpdateFilteredSeries()
+        {
+            var sort = _tvSort.Compile();
+            var sorted = sort(Series.AsQueryable());
+
+            var prevSelection = SelectedSeries;
+
+            FilteredSeries.Clear();
+
+            foreach (var item in sorted)
+                FilteredSeries.Add(item);
+
+            SelectedSeries = prevSelection;
         }
 
         protected override void OnActivated(EventArgs e)
@@ -70,6 +112,7 @@ namespace KodiNuke
 
                 progress.SetMessage("Refreshing Kodi");
                 var kSeries = await _kClient.TV.GetShows();
+                var kMovies = await _kClient.Movies.GetMovies();
 
                 var sSeriesLookup = sSeries
                     .Where(x => x.TvdbId != null)
@@ -78,9 +121,24 @@ namespace KodiNuke
                 progress.SetMessage("Matching series");
 
                 // NB: It says IMDB number here, but it's really the ID for TVDB.
-                var kSeriesLookup = kSeries
-                    .Where(x => !String.IsNullOrWhiteSpace(x.ImdbNumber))
-                    .ToDictionary(x => Int32.Parse(x.ImdbNumber));
+                var kSeriesLookup = new Dictionary<int, KodiTvShow>();
+
+                //var kSeriesLookup = kSeries
+                //    .Where(x => !String.IsNullOrWhiteSpace(x.ImdbNumber))
+                //    .ToDictionary(x => Int32.Parse(x.ImdbNumber));
+
+                // Replace above with set/add as we can sometimes have multiple series
+                // with the same TVDB ID.
+                foreach (var series in kSeries)
+                {
+                    if (string.IsNullOrWhiteSpace(series.ImdbNumber))
+                        continue;
+
+                    if (!int.TryParse(series.ImdbNumber, out var imdbNumber))
+                        continue;
+
+                    kSeriesLookup[imdbNumber] = series;
+                }
 
                 var matches = sSeriesLookup.Keys.Intersect(kSeriesLookup.Keys)
                     .Select(key => new Series(kSeriesLookup[key], sSeriesLookup[key]))
@@ -108,6 +166,20 @@ namespace KodiNuke
 
                 foreach (var series in matches)
                     Series.Add(series);
+
+                UpdateFilteredSeries();
+
+                Movies.Clear();
+
+                foreach (var movie in kMovies)
+                    Movies.Add(new Movie
+                    {
+                        Kodi = movie
+                    });
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error: " + e.ToString());
             }
             finally
             {
@@ -133,6 +205,8 @@ namespace KodiNuke
             await progress.CloseAsync();
 
             Series.Remove(SelectedSeries);
+            FilteredSeries.Remove(SelectedSeries);
+
             SelectedSeries = null;
         }
     }

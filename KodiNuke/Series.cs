@@ -46,7 +46,9 @@ namespace KodiNuke
             }
         }
 
-        public string HumanSize => ByteSize.FromBytes(Sonarr.SizeOnDisk).Humanize("#");
+        public string HumanSize => Sonarr.SizeOnDisk == 0
+            ? "0"
+            : ByteSize.FromBytes(Sonarr.SizeOnDisk).Humanize("#");
 
         public Series(KodiTvShow kodi, SonarrSeries sonarr)
         {
@@ -55,6 +57,6 @@ namespace KodiNuke
         }
 
         public override string ToString()
-            => Sonarr.Title;
+            => $"{Sonarr.Title} ({HumanSize})";
     }
 }
