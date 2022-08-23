@@ -7,14 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Humanizer;
+using PropertyChanged;
 
 namespace KodiNuke
 {
+    [ImplementPropertyChanged]
     public class Series
     {
+#if !DISABLE_KODI
         public KodiTvShow Kodi { get; set; }
+#endif
+
         public SonarrSeries Sonarr { get; set; }
 
+        [AlsoNotifyFor(nameof(Sonarr))]
         public string PosterImageUri
         {
             get
@@ -27,10 +33,14 @@ namespace KodiNuke
 
                 path = path.Replace("/sonarr/", "");
 
+                if (Sonarr.ImageBaseUrl == null || path == null)
+                    return null;
+
                 return new Uri(new Uri(Sonarr.ImageBaseUrl), path).OriginalString;
             }
         }
 
+        [AlsoNotifyFor(nameof(Sonarr))]
         public string BackgroundImageUri
         {
             get
@@ -42,6 +52,9 @@ namespace KodiNuke
 
                 path = path.Replace("/sonarr/", "");
 
+                if (Sonarr.ImageBaseUrl == null || path == null)
+                    return null;
+
                 return new Uri(new Uri(Sonarr.ImageBaseUrl), path).OriginalString;
             }
         }
@@ -50,9 +63,16 @@ namespace KodiNuke
             ? "0"
             : ByteSize.FromBytes(Sonarr.SizeOnDisk).Humanize("#");
 
+#if !DISABLE_KODI
         public Series(KodiTvShow kodi, SonarrSeries sonarr)
         {
             Kodi = kodi;
+            Sonarr = sonarr;
+        }
+#endif
+
+        public Series(SonarrSeries sonarr)
+        {
             Sonarr = sonarr;
         }
 
