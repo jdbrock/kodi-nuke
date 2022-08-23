@@ -17,6 +17,8 @@ namespace SonarrSharp
         [JsonProperty("tvMazeId")] public int? TvMazeId { get; set; }
         [JsonProperty("imdbId")] public string ImdbId { get; set; }
 
+        [JsonProperty("path")] public string Path { get; set; }
+
         [JsonProperty("sizeOnDisk")] public long SizeOnDisk { get; set; }
 
         [JsonProperty("images")] public List<Image> Images { get; set; }

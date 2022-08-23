@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using Newtonsoft.Json.Linq;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,8 +37,8 @@ namespace SonarrSharp
 
         public async Task<List<SonarrSeries>> GetAllAsync()
         {
-            var request = new RestRequest(endpoint, Method.GET);
-            var response = await _client.ExecuteTaskAsync<List<SonarrSeries>>(request);
+            var request = new RestRequest(endpoint, Method.Get);
+            var response = await _client.ExecuteAsync<List<SonarrSeries>>(request);
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK || response.Data == null)
                 throw new ApplicationException("Failed to retrieve series list.");
@@ -45,17 +46,45 @@ namespace SonarrSharp
             var data = response.Data;
 
             foreach (var item in data)
-                item.ImageBaseUrl = _client.BaseUrl.OriginalString;
+                item.ImageBaseUrl = _client.Options.BaseUrl.OriginalString;
 
             return data;
         }
 
+        public async Task<string> GetRawAsync(int id)
+        {
+            var request = new RestRequest($"{endpoint}/{id}", Method.Get);
+            var response = await _client.ExecuteAsync(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK || response.Content == null)
+                throw new ApplicationException("Failed to retrieve series.");
+
+            return response.Content;
+        }
+
+        public async Task<SonarrSeries> UpdateAsync(int id, Action<JObject> updater)
+        {
+            var cur = await GetRawAsync(id);
+            var jObject = JObject.Parse(cur);
+
+            updater(jObject);
+
+            var request = new RestRequest($"{endpoint}/{id}", Method.Put);
+            request.AddJsonBody(jObject.ToString());
+
+            var response = await _client.ExecuteAsync<SonarrSeries>(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.Accepted || response.Data == null)
+                throw new ApplicationException("Failed to update series.");
+
+            return response.Data;
+        }
+
         public async Task DeleteAsync(int id)
         {
-            var request = new RestRequest(endpoint + "/" + id, Method.DELETE);
+            var request = new RestRequest(endpoint + "/" + id, Method.Delete);
             request.AddQueryParameter("deleteFiles", "true");
 
-            var response = await _client.ExecuteTaskAsync<List<SonarrSeries>>(request);
+            var response = await _client.ExecuteAsync<List<SonarrSeries>>(request);
 
             if ((response.StatusCode != System.Net.HttpStatusCode.OK &&
                  response.StatusCode != System.Net.HttpStatusCode.Accepted && 

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KodiSharp", "kodi-sharp\Kod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KodiNuke.Movies.Console", "KodiNuke.Movies.Console\KodiNuke.Movies.Console.csproj", "{A6C1E3C0-CA06-41DD-B44E-BAFDE5A6D1C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KodiSharp.MySQL", "kodi-sharp\KodiSharp.MySQL\KodiSharp.MySQL.csproj", "{2C8DD98E-2B06-4017-A218-892FCF685351}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,8 +35,15 @@ Global
 		{A6C1E3C0-CA06-41DD-B44E-BAFDE5A6D1C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6C1E3C0-CA06-41DD-B44E-BAFDE5A6D1C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6C1E3C0-CA06-41DD-B44E-BAFDE5A6D1C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C8DD98E-2B06-4017-A218-892FCF685351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C8DD98E-2B06-4017-A218-892FCF685351}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C8DD98E-2B06-4017-A218-892FCF685351}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C8DD98E-2B06-4017-A218-892FCF685351}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {57D4B952-9B8B-4F89-8EAC-A02389348787}
 	EndGlobalSection
 EndGlobal
