@@ -95,39 +95,50 @@ namespace KodiNuke
 
             Movies = new ObservableCollection<Movie>();
 
-            var timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(5);
-            timer.Tick += OnDiskSpaceReportTimerTick;
-            timer.Start();
+            StartMonitoringDiskSpace();
         }
 
-        private void OnDiskSpaceReportTimerTick(object sender, EventArgs e)
+        private async Task StartMonitoringDiskSpace()
         {
-            var paths = Config.TvPaths;
-
-            if (_buttonsByPath == null)
+            while (true)
             {
-                _buttonsByPath = paths
-                    .ToDictionary(x => x.RootPath, x => new ButtonViewModel("", new DelegateCommand(_ => MoveSelectedSeriesTo(x))));
+                var paths = Config.TvPaths;
 
-                Buttons = _buttonsByPath.Values
-                    .OrderBy(x => x.Text)
-                    .ToList();
+                if (_buttonsByPath == null)
+                {
+                    _buttonsByPath = paths
+                        .ToDictionary(x => x.RootPath, x => new ButtonViewModel("", new DelegateCommand(_ => MoveSelectedSeriesTo(x))));
+
+                    Buttons = _buttonsByPath.Values
+                        .OrderBy(x => x.Text)
+                        .ToList();
+                }
+
+                var sb = new StringBuilder("Disk Space:    ");
+
+                foreach (var path in paths)
+                {
+                    double gb = 0;
+
+                    try
+                    {
+                        var bytes = await Task.Run(
+                            () => DiskSpaceUtility.GetFreeDiskSpaceBytes(path.RootPath)
+                        );
+
+                        gb = Math.Round(bytes / (1024d * 1024d * 1024d), 2);
+
+                        sb.Append($"{path.RootPath}: {gb}GB    ");
+                    }
+                    catch { }
+
+                    _buttonsByPath[path.RootPath].Text = $"Move to {path.RootPath} ({gb}GB free)";
+                }
+
+                DiskSpaceReport = sb.ToString();
+
+                await Task.Delay(5000);
             }
-
-            var sb = new StringBuilder("Disk Space:    ");
-
-            foreach (var path in paths)
-            {
-                var bytes = DiskSpaceUtility.GetFreeDiskSpaceBytes(path.RootPath);
-                var gb =  Math.Round(bytes / (1024d * 1024d * 1024d), 2);
-
-                sb.Append($"{path.RootPath}: {gb}GB    ");
-
-                _buttonsByPath[path.RootPath].Text = $"Move to {path.RootPath} ({gb}GB free)";
-            }
-
-            DiskSpaceReport = sb.ToString();
         }
 
         private async void MoveSelectedSeriesTo(TvPath configTargetPath)
@@ -224,9 +235,15 @@ namespace KodiNuke
                 SelectedSeries.Sonarr = series;
 
             }
+            catch (OperationCanceledException)
+            {
+                if (progress != null && progress.IsOpen)
+                    await progress?.CloseAsync();
+            }
             finally
             {
-                await progress?.CloseAsync();
+                if (progress != null && progress.IsOpen)
+                    await progress?.CloseAsync();
             }
         }
 
